@@ -10,19 +10,11 @@ import com.zandero.server.guice.BaseRestModule;
 import com.zandero.settings.Settings;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
-import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
-import io.vertx.core.http.HttpServer;
-import io.vertx.core.spi.cluster.ClusterManager;
 import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
-import io.vertx.spi.cluster.hazelcast.HazelcastClusterManager;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +22,6 @@ import java.util.List;
 /**
  *
  */
-@RunWith(VertxUnitRunner.class)
 public class GuiceTest {
 
 	protected static final int PORT = 4444;
@@ -63,7 +54,6 @@ public class GuiceTest {
 	public void before(TestContext context) {
 
 		vertx = Vertx.vertx();
-		//vertx.deployVerticle(RestVerticle.class.getName(), context.asyncAssertSuccess());
 
 		Injector injector = Guice.createInjector(testModules);
 
