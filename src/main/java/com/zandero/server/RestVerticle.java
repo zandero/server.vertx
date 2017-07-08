@@ -1,17 +1,15 @@
 package com.zandero.server;
 
+import com.zandero.rest.RestRouter;
 import com.zandero.server.entities.UserRole;
 import com.zandero.server.rest.*;
 import com.zandero.server.service.SessionService;
 import com.zandero.settings.Settings;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Handler;
-import io.vertx.ext.web.Cookie;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.CookieHandler;
-import io.vertx.ext.web.handler.ErrorHandler;
-import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,9 +28,10 @@ public class RestVerticle extends AbstractVerticle {
 
 	private final SessionService sessions;
 
-
 	private final Handler<RoutingContext> echoHandler;
+
 	private final Handler<RoutingContext> loginHandler;
+
 	private final Handler<RoutingContext> infoHandler;
 
 	private Handler<RoutingContext> globalExceptionHandler;
@@ -59,24 +58,9 @@ public class RestVerticle extends AbstractVerticle {
 	@Override
 	public void start() throws Exception {
 
-	/*	final VertxResteasyDeployment deployment = new VertxResteasyDeployment();
-
-		deployment.start();
-
-		// add RESTs
-		deployment.getRegistry().addSingletonResource(echoRest, ROOT_URL);
-		deployment.getRegistry().addSingletonResource(baseRest, ROOT_URL);
-*/
 		final RequestContextHandler contextHandler = new RequestContextHandler(sessions);
 
 		// add authorization filter ...
-		//deployment.getProviderFactory().getContainerRequestFilterRegistry().registerSingleton(authorization);
-
-		//final RestEasyRequestHandler easyRequestHandler = new RestEasyRequestHandler(vertx, deployment, "/", new VertxSecurityContext());
-
-
-		//final VertxRequestHandler vertxRequestHandler = new VertxRequestHandler(vertx, deployment, "/", null);
-		//AuthProvider authProvider = new RequestContextProvider();
 
 		Router router = Router.router(vertx);
 		router.route().handler(contextHandler);
@@ -90,14 +74,19 @@ public class RestVerticle extends AbstractVerticle {
 		router.get("/private").handler(new CheckRoleHandler(UserRole.Admin));
 		router.get("/private").handler(infoHandler); // same handler but user must be an admin to get a result
 
+
+		RestRouter.register(router, TestVerticle.class);
+
 		// NOT WORKING: router.get("/private2").handler(new CheckRoleHandler(UserRole.Admin)).handler(infoHandler);
+
+		// reg ex router
+		router.getWithRegex("\\/\\d\\/\\d").handler(echoHandler);
 
 		router.route().failureHandler(globalExceptionHandler);
 
 		vertx.createHttpServer()
 			.requestHandler(router::accept)
 			.listen(settings.get().getInt("port"));
-
 
 		log.info(this.getClass().getName() + " is deployed successfully");
 	}

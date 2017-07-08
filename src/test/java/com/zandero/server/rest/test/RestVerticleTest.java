@@ -4,7 +4,7 @@ import com.zandero.http.HttpUtils;
 import com.zandero.server.entities.UserRole;
 import com.zandero.server.entities.json.UserJSON;
 import com.zandero.server.rest.RequestContextHandler;
-import com.zandero.utils.JsonUtils;
+import com.zandero.utils.extra.JsonUtils;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;

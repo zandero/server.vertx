@@ -1,7 +1,7 @@
 package com.zandero.server.rest;
 
 import com.google.inject.ProvisionException;
-import com.zandero.utils.JsonUtils;
+import com.zandero.utils.extra.JsonUtils;
 import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
 import org.apache.http.HttpStatus;

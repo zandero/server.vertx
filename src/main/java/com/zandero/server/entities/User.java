@@ -1,6 +1,7 @@
 package com.zandero.server.entities;
 
 import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.AbstractUser;
@@ -54,6 +55,8 @@ public class User extends AbstractUser {
 	@Override
 	protected void doIsPermitted(String permission, Handler<AsyncResult<Boolean>> resultHandler) {
 
+		UserRole check = UserRole.parse(permission);
+		resultHandler.handle(Future.succeededFuture(role != null && role.isAllowed(check)));
 	}
 
 	@Override

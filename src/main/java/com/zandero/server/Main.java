@@ -10,6 +10,7 @@ import com.zandero.cmd.option.CommandOption;
 import com.zandero.cmd.option.IntOption;
 import com.zandero.server.guice.BaseRestModule;
 import com.zandero.settings.Settings;
+import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.spi.cluster.ClusterManager;
@@ -29,7 +30,7 @@ public class Main {
 		CommandOption port = new IntOption("p")
 			.longCommand("port")
 			.setting("port")
-			.setDefault(4444);
+			.defautlTo(4444);
 
 		CommandBuilder builder = new CommandBuilder();
 		builder.add(port);
@@ -43,7 +44,9 @@ public class Main {
 		try {
 
 			ClusterManager mgr = new HazelcastClusterManager();
-			VertxOptions options = new VertxOptions().setClusterManager(mgr);
+			VertxOptions options = new VertxOptions()
+				.setClusterManager(mgr)
+				.setMaxEventLoopExecuteTime(Long.MAX_VALUE);
 
 			Vertx.clusteredVertx(options, res -> {
 				if (res.succeeded()) {
@@ -53,7 +56,10 @@ public class Main {
 					vertx.registerVerticleFactory(guiceVerticleFactory);
 
 					GuiceVertxDeploymentManager deploymentManager = new GuiceVertxDeploymentManager(vertx);
-					deploymentManager.deployVerticle(RestVerticle.class);
+					DeploymentOptions deploymentOptions = new DeploymentOptions().setWorker(true);
+
+					deploymentManager.deployVerticle(RestVerticle.class, deploymentOptions);
+					deploymentManager.deployVerticle(TestVerticle.class, deploymentOptions);
 				}
 				else {
 					log.error("Could not deploy verticle, reason : " + res.failed());
